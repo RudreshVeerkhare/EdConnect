@@ -1,0 +1,7 @@
+<resources>
+    <array name="profile">
+        <item>Student</item>
+        <item>Teacher</item>
+    </array>
+    <string name="app_name">EdConnect</string>
+</resources>
