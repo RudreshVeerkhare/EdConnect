@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
-                        Intent next = new Intent(getApplicationContext(), MainActivity.class);
+                        Intent next = new Intent(getApplicationContext(), NavigationDrawerHome.class);
                         progressBar.setVisibility(View.INVISIBLE);
                         finish();
                         startActivity(next);

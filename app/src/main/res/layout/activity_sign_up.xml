@@ -22,13 +22,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="38dp"
             app:layout_constraintBottom_toTopOf="@+id/linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:src="@drawable/logo" />
+
+
 
         <EditText
             android:id="@+id/email"
@@ -42,7 +43,7 @@
             android:focusableInTouchMode="true"
             android:textColor="@color/colorPrimary"
             android:layout_marginTop="25dp"
-            android:textSize="22sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/emailError"
@@ -64,7 +65,7 @@
             android:focusableInTouchMode="true"
             android:textColor="@color/colorPrimary"
             android:layout_marginTop="8dp"
-            android:textSize="22sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/nameError"
@@ -85,7 +86,7 @@
             android:hint="Password"
             android:inputType="textPassword"
             android:textColor="@color/colorPrimary"
-            android:textSize="22sp" />
+            android:textSize="18sp" />
 
         <EditText
             android:id="@+id/cnfpassword"
@@ -97,7 +98,7 @@
             android:hint="Confirm Password"
             android:inputType="textPassword"
             android:textColor="@color/colorPrimary"
-            android:textSize="22sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/passwordError"
@@ -117,7 +118,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Gender : "
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textColor="@color/colorPrimaryDark"
                 />
 
@@ -126,7 +127,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Male"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textColor="@color/colorPrimary"
                 android:layout_marginLeft="10dp"
                 />
@@ -136,7 +137,7 @@
                 android:layout_height="wrap_content"
                 android:text="Female"
                 android:textColor="@color/colorPrimary"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:layout_marginLeft="10dp"
                 />
         </RadioGroup>
@@ -151,14 +152,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Profile : "
-                android:textSize="22dp"
+                android:textSize="18sp"
                 android:textColor="@color/colorPrimaryDark"/>
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Student"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textColor="@color/colorPrimary"
                 android:layout_marginLeft="10dp"
                 />
@@ -168,7 +169,7 @@
                 android:layout_height="wrap_content"
                 android:text="Teacher"
                 android:textColor="@color/colorPrimary"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:layout_marginLeft="10dp"/>
         </RadioGroup>
 
@@ -183,7 +184,7 @@
             android:background="@drawable/button"
             android:text="Sign Up"
             android:textColor="#FFFFFF"
-            android:textSize="22sp" />
+            android:textSize="20sp" />
 
 
 
