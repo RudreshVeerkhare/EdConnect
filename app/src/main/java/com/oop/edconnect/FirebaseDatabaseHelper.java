@@ -29,6 +29,25 @@ public class FirebaseDatabaseHelper {
         this.map = new LinkedHashMap<>();
     }
 
+    public void readDataClassroom(final DataStatus dataStatus){
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                map.clear();
+                for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                    map.put(keyNode.getKey(), keyNode.getValue(Classroom.class));
+                }
+                dataStatus.DataIsLoaded(map);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
     public void readDataStudent(final DataStatus dataStatus){
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -63,5 +82,9 @@ public class FirebaseDatabaseHelper {
 
             }
         });
+    }
+
+    public void addProfile(Profile profile, String userID){
+        this.ref.child(userID).setValue(profile);
     }
 }

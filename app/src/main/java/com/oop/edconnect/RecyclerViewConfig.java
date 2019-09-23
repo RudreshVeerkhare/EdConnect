@@ -34,15 +34,21 @@ public class RecyclerViewConfig {
             textview2 = itemView.findViewById(R.id.textView2);
         }
 
-        public void bindStudent(Student obj, String key){
-            textview1.setText(obj.name);
-            textview2.setText(obj.username);
+        public void bindStudent(Profile obj, String key){
+            textview1.setText(obj.fullname);
+            textview2.setText(obj.email);
             this.key = key;
         }
 
-        public void bindTeacher(Teacher obj, String key){
-            textview1.setText(obj.name);
-            textview2.setText(obj.username);
+        public void bindTeacher(Profile obj, String key){
+            textview1.setText(obj.fullname);
+            textview2.setText(obj.email);
+            this.key = key;
+        }
+
+        public void bindClassroom(Classroom obj, String key){
+            textview1.setText(obj.title);
+            textview2.setText(obj.creater);
             this.key = key;
         }
     }
@@ -63,10 +69,12 @@ public class RecyclerViewConfig {
         @Override
         public void onBindViewHolder(@NonNull ListItemView holder, int position) {
             String key = (String) map.keySet().toArray()[position];
-            if(map.get(key) instanceof Student)
-                holder.bindStudent((Student) map.get(key), key);
+            if(map.get(key) instanceof Classroom)
+                holder.bindClassroom((Classroom) map.get(key), key);
+            else if(map.get(key) instanceof Student)
+                holder.bindStudent((Profile) map.get(key), key);
             else if(map.get(key) instanceof Teacher)
-                holder.bindTeacher((Teacher) map.get(key), key);
+                holder.bindTeacher((Profile) map.get(key), key);
 
         }
 

@@ -25,18 +25,11 @@ public class ListData extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.list_view, container, false);
 
-
-
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.list_view);
         recyclerView = view.findViewById(R.id.recycler_view);
         progressBar = view.findViewById(R.id.progressBar2);
-//        FirebaseAuth.getInstance().signOut();
 
 
-        new FirebaseDatabaseHelper("Student").readDataStudent(new FirebaseDatabaseHelper.DataStatus() {
+        new FirebaseDatabaseHelper("Classroom").readDataClassroom(new FirebaseDatabaseHelper.DataStatus() {
             @Override
             public void DataIsLoaded(LinkedHashMap<String, Object> map) {
                 progressBar.setVisibility(View.INVISIBLE);

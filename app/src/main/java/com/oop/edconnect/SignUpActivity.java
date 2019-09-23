@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                finish();
             }
         });
 
@@ -50,31 +52,64 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void signUp() {
-        String email = this.email.getText().toString();
+        final String email = this.email.getText().toString().trim();
         String password1 = this.password1.getText().toString();
         String password2 = this.password2.getText().toString();
+        String fullname = this.fullname.getText().toString();
+        RadioGroup radioGender = findViewById(R.id.signup_gender);
+        RadioGroup radioType = findViewById(R.id.signup_profile);
+        String type, gender;
+
+
 
         if(email.isEmpty()){
             emailError.setVisibility(View.VISIBLE);
+            return;
         }
 
         if(password1.isEmpty() || password2.isEmpty()){
             passwordError.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        if(radioGender.getCheckedRadioButtonId() == -1 || radioType.getCheckedRadioButtonId() == -1){
+            Toast.makeText(getApplicationContext(), "Select proper choices", Toast.LENGTH_SHORT).show();
+            return;
         }
 
 
+
         if(password1.equals(password2)){
+
+            if(radioType.getCheckedRadioButtonId() == R.id.student){
+                type = "Student";
+            } else {
+                type = "Teacher";
+            }
+
+            if(radioGender.getCheckedRadioButtonId() == R.id.male){
+                gender = "Male";
+            } else {
+                gender = "Female";
+            }
+
+
+            final Profile profile = new Profile(fullname, gender, email);
+            final FirebaseDatabaseHelper mHelper = new FirebaseDatabaseHelper(type);
 
             this.progressB.setVisibility(View.VISIBLE);
             mAuth.createUserWithEmailAndPassword(email, password1).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
+
+                        mHelper.addProfile(profile, FirebaseAuth.getInstance().getCurrentUser().getUid());
+
                         finish();
-                        startActivity(new Intent(getApplicationContext(), ListData.class));
+                        startActivity(new Intent(getApplicationContext(), NavigationDrawerHome.class));
                     }
                     else{
-                        progressB.setVisibility(View.VISIBLE);
+                        progressB.setVisibility(View.INVISIBLE);
                         Toast.makeText(getApplicationContext(), "Sign Up failed!!",Toast.LENGTH_SHORT).show();
                     }
                 }

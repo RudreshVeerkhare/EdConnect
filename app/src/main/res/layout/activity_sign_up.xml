@@ -109,68 +109,74 @@
             android:visibility="gone" />
 
         <RadioGroup
+            android:id="@+id/signup_gender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Gender : "
-                android:textSize="18sp"
                 android:textColor="@color/colorPrimaryDark"
-                />
-
+                android:textSize="18sp" />
 
             <RadioButton
+                android:id="@+id/male"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Male"
-                android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
                 android:layout_marginLeft="10dp"
-                />
+                android:text="Male"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp" />
+
 
             <RadioButton
+                android:id="@+id/female"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:text="Female"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp"
-                android:layout_marginLeft="10dp"
-                />
+                android:textSize="18sp" />
+
+
         </RadioGroup>
 
         <RadioGroup
+            android:id="@+id/signup_profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginTop="8dp"
-            >
+            android:orientation="horizontal">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Profile : "
-                android:textSize="18sp"
-                android:textColor="@color/colorPrimaryDark"/>
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="18sp" />
 
             <RadioButton
+                android:id="@+id/student"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Student"
-                android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
                 android:layout_marginLeft="10dp"
-                />
+                android:text="Student"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp" />
 
             <RadioButton
+                android:id="@+id/teacher"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:text="Teacher"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp"
-                android:layout_marginLeft="10dp"/>
+                android:textSize="18sp" />
+
+
         </RadioGroup>
 
 
