@@ -1,11 +1,16 @@
 package com.oop.edconnect;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -14,10 +19,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SignUpActivity extends AppCompatActivity {
     private EditText email, fullname, password1, password2;
@@ -25,6 +41,14 @@ public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private ProgressBar progressB;
     private Button login, signupButton;
+    private CircleImageView signupImage;
+    private FloatingActionButton imageFab;
+
+    private Uri imageUri;
+    private final int PICK_IMAGE_REQUEST = 1;
+
+    private StorageReference profileImgRef;
+    private StorageTask uploadTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +56,13 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         init();
+
+        imageFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openFileChooser();
+            }
+        });
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,9 +76,30 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 signUp();
+                //uploadFile();// function will upload image to storage and then sign up user
             }
         });
 
+
+    }
+
+    private void openFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null){
+            imageUri = data.getData();
+            Log.i("Fun", "image selected is " + data.getData().toString());
+
+            Picasso.get().load(imageUri).into(signupImage);
+        }
 
     }
 
@@ -94,6 +146,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
 
 
+
             final Profile profile = new Profile(fullname, gender, email);
             final FirebaseDatabaseHelper mHelper = new FirebaseDatabaseHelper(type);
 
@@ -105,8 +158,9 @@ public class SignUpActivity extends AppCompatActivity {
 
                         mHelper.addProfile(profile, FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                        finish();
-                        startActivity(new Intent(getApplicationContext(), NavigationDrawerHome.class));
+                        uploadFile();
+
+
                     }
                     else{
                         progressB.setVisibility(View.INVISIBLE);
@@ -116,6 +170,58 @@ public class SignUpActivity extends AppCompatActivity {
             });
         }
 
+    }
+
+    private void setProfileImage(Uri uri){
+        UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                .setDisplayName(fullname.getText().toString().trim())
+                .setPhotoUri(uri).build();
+
+        FirebaseAuth.getInstance().getCurrentUser().updateProfile(profileUpdate)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(getApplicationContext(),"profile image added",Toast.LENGTH_LONG);
+                        finish();
+                        startActivity(new Intent(getApplicationContext(), NavigationDrawerHome.class));
+                    }
+                });
+    }
+
+    private void uploadFile() {
+        if (imageUri != null){
+
+
+            final StorageReference fileRef = profileImgRef.child(mAuth.getUid() + "." + getFileExtension(imageUri));
+            uploadTask = fileRef.putFile(imageUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    Toast.makeText(getApplicationContext(), uri.toString(), Toast.LENGTH_LONG);
+                                    setProfileImage(uri);
+
+                                }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressB.setVisibility(View.INVISIBLE);
+                            Toast.makeText(getApplicationContext(), "Failed " + e.getMessage(), Toast.LENGTH_SHORT);
+                        }
+                    });
+
+        }
+    }
+
+    private String getFileExtension(Uri imageUri) {
+        ContentResolver cR = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(imageUri));
     }
 
     private void init(){
@@ -135,5 +241,9 @@ public class SignUpActivity extends AppCompatActivity {
         login = findViewById(R.id.login);
         signupButton = findViewById(R.id.signupButton);
 
+        signupImage = findViewById(R.id.signup_image);
+        imageFab = findViewById(R.id.image_fab);
+
+        profileImgRef = FirebaseStorage.getInstance().getReference("profileImages");
     }
 }

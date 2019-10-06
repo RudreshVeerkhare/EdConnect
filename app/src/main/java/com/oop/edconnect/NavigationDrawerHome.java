@@ -9,14 +9,19 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NavigationDrawerHome extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -32,13 +37,24 @@ public class NavigationDrawerHome extends AppCompatActivity implements Navigatio
         Toolbar toolbar = findViewById(R.id.nav_toolbar);
         setSupportActionBar(toolbar);
 
+        Toast.makeText(getApplicationContext(),user.getDisplayName(),Toast.LENGTH_SHORT);
+//        Toast.makeText(getApplicationContext(),user.getPhotoUrl().toString(),Toast.LENGTH_SHORT);
+
+
+
         drawer = findViewById(R.id.nav_drawerlayout);
         NavigationView navigationView = findViewById(R.id.nav_drawer);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // set profile image
+        Picasso.get().load(user.getPhotoUrl()).into((CircleImageView) navigationView.getHeaderView(0).findViewById(R.id.nav_profile_photo));
+
+
         // setting email and username
         TextView email = navigationView.getHeaderView(0).findViewById(R.id.nav_email_label);
+        TextView name = navigationView.getHeaderView(0).findViewById(R.id.nav_username_label);
         email.setText(user.getEmail());
+        name.setText(user.getDisplayName());
 
         // hamburger icon
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.nav_drawer_open, R.string.nav_drawer_close);
