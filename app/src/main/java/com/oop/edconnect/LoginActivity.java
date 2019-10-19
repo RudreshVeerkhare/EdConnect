@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
     private void SignIn() {
 
 
-        String name = username.getText().toString();
+        String name = username.getText().toString().trim();
         String pass = password.getText().toString();
 
         if (name.isEmpty()){

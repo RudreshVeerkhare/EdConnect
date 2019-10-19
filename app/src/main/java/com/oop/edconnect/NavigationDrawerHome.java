@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -77,7 +78,7 @@ public class NavigationDrawerHome extends AppCompatActivity implements Navigatio
         }
     }
 
-
+    // for selected items in drawer
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
@@ -102,4 +103,6 @@ public class NavigationDrawerHome extends AppCompatActivity implements Navigatio
 
         return true;
     }
+
+    //
 }

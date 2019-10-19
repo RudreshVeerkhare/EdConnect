@@ -87,4 +87,9 @@ public class FirebaseDatabaseHelper {
     public void addProfile(Profile profile, String userID){
         this.ref.child(userID).setValue(profile);
     }
+
+    public void addDoubtroom(Doubtroom doubtroom, String UID){
+        this.ref.child(UID).setValue(doubtroom);
+    }
+
 }

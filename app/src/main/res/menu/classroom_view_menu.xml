@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/classview_class"
+        android:enabled="true"
+        android:title="Class"
+        android:icon="@drawable/ic_classroom"
+        />
+
+    <item
+        android:id="@+id/classview_doubts"
+        android:enabled="true"
+        android:title="Doubts"
+        android:icon="@drawable/ic_message_black_24dp"
+        />
+    <item
+        android:id="@+id/classview_info"
+        android:enabled="true"
+        android:title="Info"
+        android:icon="@drawable/ic_info_black_24dp"/>
+
+
+
+
+</menu>

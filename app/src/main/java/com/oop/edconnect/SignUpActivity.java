@@ -26,7 +26,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
@@ -177,15 +179,21 @@ public class SignUpActivity extends AppCompatActivity {
                 .setDisplayName(fullname.getText().toString().trim())
                 .setPhotoUri(uri).build();
 
-        FirebaseAuth.getInstance().getCurrentUser().updateProfile(profileUpdate)
+        final FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        currUser.updateProfile(profileUpdate)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         Toast.makeText(getApplicationContext(),"profile image added",Toast.LENGTH_LONG);
                         finish();
+                        User user = new User(currUser.getDisplayName(), currUser.getPhotoUrl().toString());
+                        FirebaseDatabase.getInstance().getReference("Users").child(currUser.getUid()).setValue(user);
                         startActivity(new Intent(getApplicationContext(), NavigationDrawerHome.class));
                     }
                 });
+
+
     }
 
     private void uploadFile() {

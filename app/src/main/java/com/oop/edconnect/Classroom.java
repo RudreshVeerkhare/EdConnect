@@ -7,14 +7,16 @@ public class Classroom {
     String title;
     String creater;
     LinkedList<String> students;
+    String doubtroom;
 
     public Classroom() {
     }
 
-    public Classroom(String title, String creater, LinkedList<String> students) {
+    public Classroom(String title, String creater, LinkedList<String> students, String doubtroom) {
         this.title = title;
         this.creater = creater;
         this.students = students;
+        this.doubtroom = doubtroom;
     }
 
     public String getTitle() {
@@ -27,5 +29,9 @@ public class Classroom {
 
     public LinkedList<String> getStudents() {
         return students;
+    }
+
+    public String getDoubtroom(){
+        return this.doubtroom;
     }
 }
