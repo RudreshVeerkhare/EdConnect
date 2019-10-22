@@ -27,13 +27,7 @@ public class MainActivity extends AppCompatActivity {
         animationView = findViewById(R.id.animation);
         animationView.playAnimation();
 
-        final int delayMs = 4500;
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                updateUI();
-            }
-        }, delayMs);
+        aninmate();
 
 
 
@@ -48,7 +42,18 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(), NavigationDrawerHome.class));
         }
 
-        finish();
+
+    }
+
+    private void aninmate(){
+        final int delayMs = 4500;
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateUI();
+                finish();
+            }
+        }, delayMs);
     }
 
 

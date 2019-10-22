@@ -1,29 +1,34 @@
 package com.oop.edconnect;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.GestureDetector;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ProgressBar;
-
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 public class ListData extends Fragment {
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
+    private FloatingActionButton add;
+    LinkedHashMap<String, User> users;
 
     @Nullable
     @Override
@@ -32,20 +37,29 @@ public class ListData extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view);
         progressBar = view.findViewById(R.id.progressBar2);
+        add = view.findViewById(R.id.addClassFab);
+        users = new LinkedHashMap<>();
 
-
-        new FirebaseDatabaseHelper("Classroom").readDataClassroom(new FirebaseDatabaseHelper.DataStatus() {
+        add.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void DataIsLoaded(final LinkedHashMap<String, Object> map) {
+            public void onClick(View view) {
+                addClassroom();
+            }
+        });
+
+        new FirebaseDatabaseClassroomHandler(FirebaseAuth.getInstance().getCurrentUser().getUid()).readClassroomData(new FirebaseDatabaseClassroomHandler.DataStatus() {
+            @Override
+            public void DataIsLoaded(final LinkedList<Classroom> classrooms) {
+
                 progressBar.setVisibility(View.INVISIBLE);
-                new RecyclerViewConfig(recyclerView, getActivity(), map);
+                new RecyclerViewConfig(recyclerView, getActivity(), classrooms);
+
                 recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
                         Intent intent = new Intent(getContext(), ClassroomView.class);
-                        String key = (String) map.keySet().toArray()[position];
-                        Classroom classroom = (Classroom) map.get(key);
-                        intent.putExtra("classID", key);
+                        Classroom classroom = classrooms.get(position);
+                        intent.putExtra("classID", classroom.getClassId());
                         intent.putExtra("className", classroom.getTitle());
                         startActivity(intent);
                     }
@@ -74,58 +88,42 @@ public class ListData extends Fragment {
             }
         });
 
+
         return view;
     }
 
+    private void addClassroom() {
+        final String currUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users");
 
 
-
-}
-
-// listener for in item click
-class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener{
-    private OnItemClickListener mListener;
-
-    public interface OnItemClickListener {
-        public void onItemClick(View view, int position);
-        public void onLongItemClick(View view, int position);
-    }
-
-    GestureDetector mGestureDetector;
-
-    public RecyclerItemClickListener(Context context, final RecyclerView recyclerView, OnItemClickListener listener){
-        mListener = listener;
-        mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener(){
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public boolean onSingleTapUp(MotionEvent e) {
-                return true;
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                users.clear();
+                for(DataSnapshot keyNode : dataSnapshot.getChildren()){
+                    users.put(keyNode.getKey(), keyNode.getValue(User.class));
+                }
+                createClass(currUserId);
             }
 
             @Override
-            public void onLongPress(MotionEvent e) {
-                View child = recyclerView.findChildViewUnder(e.getX(), e.getY());
-                if(child != null && mListener != null){
-                    mListener.onLongItemClick(child, recyclerView.getChildAdapterPosition(child));
-                }
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
     }
 
-    @Override
-    public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-        View childView = rv.findChildViewUnder(e.getX(), e.getY());
-        if(childView != null && mListener != null && mGestureDetector.onTouchEvent(e)){
-            mListener.onItemClick(childView, rv.getChildAdapterPosition(childView));
-            return true;
+    private void createClass(String currUserId) {
+        User user = users.get(currUserId);
+        if ( user.getProfileType().equals("Teacher") ){
+            startActivity(new Intent(getContext(), CreateClass.class));
         }
 
-        return false;
+        if (user.getProfileType().equals("Student")){
+            startActivity(new Intent(getContext(), JoinClassroom.class));
+        }
     }
 
-    @Override
-    public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {}
 
-    @Override
-    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
 }

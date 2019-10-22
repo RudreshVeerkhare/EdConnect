@@ -4,19 +4,19 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 public class Classroom {
+    String classId;
     String title;
     String creater;
     LinkedList<String> students;
-    String doubtroom;
 
     public Classroom() {
     }
 
-    public Classroom(String title, String creater, LinkedList<String> students, String doubtroom) {
+    public Classroom(String title, String creater, String classId) {
         this.title = title;
+        this.classId = classId;
         this.creater = creater;
-        this.students = students;
-        this.doubtroom = doubtroom;
+        this.students = new LinkedList<>();
     }
 
     public String getTitle() {
@@ -31,7 +31,7 @@ public class Classroom {
         return students;
     }
 
-    public String getDoubtroom(){
-        return this.doubtroom;
+    public String getClassId() {
+        return classId;
     }
 }

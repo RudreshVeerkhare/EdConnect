@@ -9,15 +9,24 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 public class RecyclerViewConfig {
     private Context mContext;
     private ListItemAdapter itemsAdapter;
+    private LinkedHashMap<String, User> users;
 
-    public RecyclerViewConfig(RecyclerView recyclerView, Context context, LinkedHashMap<String, Object> map) {
+    public RecyclerViewConfig(RecyclerView recyclerView, Context context, LinkedList<Classroom> classrooms) {
+        this.users = new LinkedHashMap<>();
         this.mContext = context;
-        this.itemsAdapter = new ListItemAdapter(map);
+        this.itemsAdapter = new ListItemAdapter(classrooms);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(this.itemsAdapter);
     }
@@ -26,7 +35,6 @@ public class RecyclerViewConfig {
         private TextView textview1;
         private TextView textview2;
 
-        private String key;
 
         public ListItemView(ViewGroup parent){
             super(LayoutInflater.from(mContext).inflate(R.layout.list_data, parent, false));
@@ -34,30 +42,36 @@ public class RecyclerViewConfig {
             textview2 = itemView.findViewById(R.id.textView2);
         }
 
-        public void bindStudent(Profile obj, String key){
-            textview1.setText(obj.fullname);
-            textview2.setText(obj.email);
-            this.key = key;
-        }
 
-        public void bindTeacher(Profile obj, String key){
-            textview1.setText(obj.fullname);
-            textview2.setText(obj.email);
-            this.key = key;
-        }
+        public void bindClassroom(final Classroom obj){
+            DatabaseReference user = FirebaseDatabase.getInstance().getReference("Users");
+            user.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    users.clear();
+                    for (DataSnapshot keyNode : dataSnapshot.getChildren()) {
+                        users.put(keyNode.getKey(), keyNode.getValue(User.class));
+                    }
 
-        public void bindClassroom(Classroom obj, String key){
-            textview1.setText(obj.title);
-            textview2.setText(obj.creater);
-            this.key = key;
+
+                    textview1.setText(obj.title);
+                    textview2.setText(users.get(obj.getCreater()).getUserName());
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
         }
     }
 
     class ListItemAdapter extends RecyclerView.Adapter<ListItemView> {
-        private LinkedHashMap<String, Object> map;
+        private LinkedList<Classroom> classrooms;
 
-        public ListItemAdapter(LinkedHashMap<String, Object> map) {
-            this.map = map;
+        public ListItemAdapter(LinkedList<Classroom> classrooms) {
+            this.classrooms = classrooms;
         }
 
         @NonNull
@@ -68,19 +82,13 @@ public class RecyclerViewConfig {
 
         @Override
         public void onBindViewHolder(@NonNull ListItemView holder, int position) {
-            String key = (String) map.keySet().toArray()[position];
-            if(map.get(key) instanceof Classroom)
-                holder.bindClassroom((Classroom) map.get(key), key);
-            else if(map.get(key) instanceof Student)
-                holder.bindStudent((Profile) map.get(key), key);
-            else if(map.get(key) instanceof Teacher)
-                holder.bindTeacher((Profile) map.get(key), key);
+            holder.bindClassroom(classrooms.get(position));
 
         }
 
         @Override
         public int getItemCount() {
-            return map.size();
+            return classrooms.size();
         }
     }
 }

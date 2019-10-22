@@ -35,6 +35,8 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.util.LinkedList;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -148,9 +150,8 @@ public class SignUpActivity extends AppCompatActivity {
             }
 
 
-
-            final Profile profile = new Profile(fullname, gender, email);
-            final FirebaseDatabaseHelper mHelper = new FirebaseDatabaseHelper(type);
+            //populating Profile object
+            final Profile profile = new Profile(fullname, gender, email, type);
 
             this.progressB.setVisibility(View.VISIBLE);
             mAuth.createUserWithEmailAndPassword(email, password1).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -158,9 +159,7 @@ public class SignUpActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
 
-                        mHelper.addProfile(profile, FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-                        uploadFile();
+                        uploadFile(profile);
 
 
                     }
@@ -174,7 +173,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
-    private void setProfileImage(Uri uri){
+    private void setProfileImage(Uri uri, final Profile profile){
         UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                 .setDisplayName(fullname.getText().toString().trim())
                 .setPhotoUri(uri).build();
@@ -187,8 +186,12 @@ public class SignUpActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         Toast.makeText(getApplicationContext(),"profile image added",Toast.LENGTH_LONG);
                         finish();
-                        User user = new User(currUser.getDisplayName(), currUser.getPhotoUrl().toString());
+                        User user = new User(currUser.getDisplayName(), currUser.getPhotoUrl().toString(), profile.getType(), profile.getGender(), profile.getEmail());
+                        EnrolledClasses enrolledClasses = new EnrolledClasses(currUser.getDisplayName());
+
+                        FirebaseDatabase.getInstance().getReference("EnrolledClasses").child(currUser.getUid()).setValue(enrolledClasses);
                         FirebaseDatabase.getInstance().getReference("Users").child(currUser.getUid()).setValue(user);
+
                         startActivity(new Intent(getApplicationContext(), NavigationDrawerHome.class));
                     }
                 });
@@ -196,7 +199,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
-    private void uploadFile() {
+    private void uploadFile(final Profile profile) {
         if (imageUri != null){
 
 
@@ -209,7 +212,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     Toast.makeText(getApplicationContext(), uri.toString(), Toast.LENGTH_LONG);
-                                    setProfileImage(uri);
+                                    setProfileImage(uri, profile);
 
                                 }
                             });
